@@ -11,13 +11,15 @@ find_package(GTest REQUIRED)
 set(link_lib glog::glog GTest::gtest)
 
 set(link_math_lib ${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
-aux_source_directory(./test DIR_TEST_ARMA)
-aux_source_directory(./source DIR_SOURCE_ARMA)
-aux_source_directory(./source/layer/abstract DIR_ABSTRACT_LAYER)
-aux_source_directory(./source/layer/details DIR_DETAIL_LAYER)
-aux_source_directory(./source/parser DIR_PARSER)
 
-add_executable(InferFramework main.cpp ${DIR_TEST_ARMA} ${DIR_PARSER} ${DIR_SOURCE_ARMA} ${DIR_DETAIL_LAYER} ${DIR_ABSTRACT_LAYER})
+aux_source_directory(test DIR_TEST)
+aux_source_directory(source DIR_SOURCE)
+aux_source_directory(source/data DIR_SOURCE_DATA)
+aux_source_directory(source/layer/abstract DIR_ABSTRACT_LAYER)
+aux_source_directory(source/layer/details DIR_DETAIL_LAYER)
+aux_source_directory(source/parser DIR_PARSER)
+
+add_executable(InferFramework ${DIR_TEST} ${DIR_PARSER} ${DIR_SOURCE} ${DIR_SOURCE_DATA} ${DIR_DETAIL_LAYER} ${DIR_ABSTRACT_LAYER})
 
 target_link_libraries(InferFramework ${link_lib} ${link_math_lib})
 

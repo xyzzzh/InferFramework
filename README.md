@@ -2,6 +2,30 @@
 
 基于C++实现的深度学习CPU推理框架
 
+## 项目结构
+
+```
+.
+├── CMakeLists.txt
+├── README.md
+├── include
+│       ├── data
+│       ├── layer
+│       ├── parser
+│       └── runtime
+├── log
+├── main.cpp
+├── source
+│       ├── data
+│       ├── layer
+│       │       ├── abstract
+│       │       └── details
+│       ├── parser
+│       └── runtime
+└── test
+
+```
+
 ## 依赖库
 
 ```
