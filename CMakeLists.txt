@@ -12,6 +12,8 @@ set(link_lib glog::glog GTest::gtest)
 
 set(link_math_lib ${ARMADILLO_LIBRARIES} ${BLAS_LIBRARIES} ${LAPACK_LIBRARIES})
 
+include_directories(include)
+
 aux_source_directory(test DIR_TEST)
 aux_source_directory(source DIR_SOURCE)
 aux_source_directory(source/data DIR_SOURCE_DATA)
@@ -27,6 +29,8 @@ target_link_libraries(InferFramework ${link_lib} ${link_math_lib})
 target_include_directories(InferFramework PUBLIC ${glog_INCLUDE_DIR})
 target_include_directories(InferFramework PUBLIC ${GTest_INCLUDE_DIR})
 target_include_directories(InferFramework PUBLIC ${Armadillo_INCLUDE_DIR})
-target_include_directories(InferFramework PUBLIC ./include)
+target_include_directories(InferFramework PUBLIC ${Armadillo_INCLUDE_DIR})
+target_include_directories(InferFramework PUBLIC include)
+
 
 enable_testing()
