@@ -5,7 +5,7 @@
 #ifndef INFERFRAMEWORK_RUNTIMEGRAPH_HPP
 #define INFERFRAMEWORK_RUNTIMEGRAPH_HPP
 
-#include "runtime/Common.hpp"
+#include "Common.hpp"
 #include "runtime/RuntimeOperator.hpp"
 #include "runtime/RuntimeOperand.hpp"
 #include "runtime/RuntimeAttribute.hpp"
@@ -14,6 +14,7 @@
 // 计算图类，由多个计算节点和节点之间的数据流图组成
 class RuntimeGraph {
 public:
+    // 初始化计算图
 
 private:
 

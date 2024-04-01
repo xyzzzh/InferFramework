@@ -150,7 +150,7 @@ int StoreZipReader::open(const std::string& path)
         return -1;
       }
 
-      // file name
+      // file m_name
       std::string name;
       name.resize(lfh.file_name_length);
       fread((char*)name.data(), name.size(), 1, fp);
@@ -164,7 +164,7 @@ int StoreZipReader::open(const std::string& path)
 
       filemetas[name] = fm;
 
-      //             fprintf(stderr, "%s = %d  %d\n", name.c_str(), fm.offset, fm.size);
+      //             fprintf(stderr, "%s = %d  %d\n", m_name.c_str(), fm.offset, fm.size);
 
       fseek(fp, lfh.compressed_size, SEEK_CUR);
     }
@@ -173,7 +173,7 @@ int StoreZipReader::open(const std::string& path)
       central_directory_file_header cdfh;
       fread((char*)&cdfh, sizeof(cdfh), 1, fp);
 
-      // skip file name
+      // skip file m_name
       fseek(fp, cdfh.file_name_length, SEEK_CUR);
 
       // skip extra field

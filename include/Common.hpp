@@ -5,12 +5,15 @@
 #ifndef INFERFRAMEWORK_COMMON_HPP
 #define INFERFRAMEWORK_COMMON_HPP
 
+#include <armadillo>
 #include <vector>
 #include <string>
 #include <memory>
 #include <glog/logging.h>
 #include <map>
 #include <queue>
+#include <fstream>
+#include <utility>
 #include "data/Tensor.hpp"
 #include "runtime/ir.h"
 #include "runtime/store_zip.hpp"
@@ -87,5 +90,6 @@ enum class EParseParameterAttrStatus {
 
     EPPAS_ParameterAttrParseSuccess = 0
 };
+
 
 #endif //INFERFRAMEWORK_COMMON_HPP

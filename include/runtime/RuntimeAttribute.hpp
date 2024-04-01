@@ -5,23 +5,23 @@
 #ifndef INFERFRAMEWORK_RUNTIMEATTRIBUTE_HPP
 #define INFERFRAMEWORK_RUNTIMEATTRIBUTE_HPP
 
-#include "runtime/Common.hpp"
+#include "Common.hpp"
 
 // 计算图节点的属性信息
 struct RuntimeAttribute {
-    std::vector<char> _weight_data;                             // 节点中的权重参数
-    std::vector<uint32_t> _shapes;                              // 节点中的形状信息
-    ERuntimeDataType _type = ERuntimeDataType::ERDT_Unknown;    // 节点中的数据类型
+    std::vector<char> m_weight_data;                             // 节点中的权重参数
+    std::vector<uint32_t> m_shapes;                              // 节点中的形状信息
+    ERuntimeDataType m_type = ERuntimeDataType::ERDT_Unknown;    // 节点中的数据类型
 
     // 从节点中加载权重参数
     template<typename T>
     std::vector<T> get_weight_data(bool need_clear_weight) {
-        CHECK(!this->_weight_data.empty());
-        CHECK(this->_type != ERuntimeDataType::ERDT_Unknown);
+        CHECK(!this->m_weight_data.empty());
+        CHECK(this->m_type != ERuntimeDataType::ERDT_Unknown);
 
         std::vector<T> weight;
 
-        switch (this->_type) {
+        switch (this->m_type) {
             // float32
             case ERuntimeDataType::ERDT_Float32: {
                 // 检查是否为float
@@ -29,17 +29,17 @@ struct RuntimeAttribute {
                 CHECK(is_float);
                 // 检查是否为float32
                 const uint32_t float_size = sizeof(float);
-                const uint32_t weight_size = this->_weight_data.size();
+                const uint32_t weight_size = this->m_weight_data.size();
                 CHECK(weight_size % float_size == 0);
 
-                auto *start_ptr = reinterpret_cast<const float *>(this->_weight_data.data());
+                auto *start_ptr = reinterpret_cast<const float *>(this->m_weight_data.data());
                 auto *end_ptr = start_ptr + weight_size / float_size;
                 weight.insert(weight.end(), start_ptr, end_ptr);
 
                 break;
             }
             default: {
-                LOG(FATAL) << "Unknown weight data type" << int(this->_type);
+                LOG(FATAL) << "Unknown weight data type" << int(this->m_type);
             }
         }
 
@@ -50,8 +50,8 @@ struct RuntimeAttribute {
     }
 
     void clear_weight() {
-        if (!this->_weight_data.empty()) {
-            _weight_data.clear();
+        if (!this->m_weight_data.empty()) {
+            m_weight_data.clear();
         }
     }
 

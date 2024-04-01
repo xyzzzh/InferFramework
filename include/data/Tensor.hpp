@@ -102,33 +102,10 @@ private:
 
     // 张量数据的实际尺寸大小
     // {rows, cols, channels}
-    std::vector<uint32_t> raw_shapes_;
+    std::vector<uint32_t> m_raw_shapes;
 
     // 张量数据
-    arma::fcube data_;
+    arma::fcube m_data;
 };
-
-std::tuple<std::shared_ptr<Tensor>, std::shared_ptr<Tensor>>
-tensor_broadcast(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2);
-
-std::shared_ptr<Tensor>
-tensor_padding(const std::shared_ptr<Tensor> &tensor, const std::vector<uint32_t> &pads, float padding_value);
-
-bool tensor_is_same(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2);
-
-std::shared_ptr<Tensor> tensor_add(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2);
-
-void tensor_add(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2,
-                const std::shared_ptr<Tensor> &output_tensor);
-
-std::shared_ptr<Tensor> tensor_multiply(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2);
-
-void tensor_multiply(const std::shared_ptr<Tensor> &tensor1, const std::shared_ptr<Tensor> &tensor2,
-                     const std::shared_ptr<Tensor> &output_tensor);
-
-std::shared_ptr<Tensor> tensor_create(uint32_t channels, uint32_t rows, uint32_t cols);
-
-std::shared_ptr<Tensor> tensor_create(const std::vector<uint32_t> &shapes);
-
 
 #endif //INFERFRAMEWORK_TENSOR_HPP

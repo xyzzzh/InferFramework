@@ -4,7 +4,8 @@
 
 #include <glog/logging.h>
 #include <gtest/gtest.h>
-#include "../include/data/Tensor.hpp"
+#include "data/Tensor.hpp"
+#include "Utils.hpp"
 
 TEST(test_tensor, tensor_init1) {
     Tensor f1(3, 224, 224);

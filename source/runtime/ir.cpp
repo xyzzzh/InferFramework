@@ -2441,7 +2441,7 @@ Operator* Graph::new_operator_after(const std::string& type, const std::string& 
 Operand* Graph::new_operand(const torch::jit::Value* v)
 {
     Operand* r = new Operand;
-    r->name = v->debugName();
+    r->m_name = v->debugName();
 
     auto pt = v->type()->cast<c10::TensorType>();
     if (pt)
