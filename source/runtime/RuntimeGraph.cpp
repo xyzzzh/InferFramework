@@ -41,7 +41,7 @@ void RuntimeGraph::build(const std::string &input_name, const std::string &outpu
 
     // 构建拓扑顺序
     this->m_topo_operators.clear();
-    for (const auto &[_, op] : this->m_operators_maps) {
+    for (const auto &[_, op]: this->m_operators_maps) {
         // 根据输入节点构建拓扑排序
         if (op->m_type == "pnnx.Input" && !op->m_has_forward) {
             this->ReverseTopo(op);
@@ -300,7 +300,7 @@ void RuntimeGraph::ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op) 
     const auto &next_ops = root_op->m_output_operators;
     for (const auto &[_, op]: next_ops) {
         if (op != nullptr) {
-            if (op->m_has_forward) {
+            if (!op->m_has_forward) {
                 this->ReverseTopo(op);
             }
         }
@@ -310,5 +310,9 @@ void RuntimeGraph::ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op) 
         CHECK(op->m_has_forward);
     }
     this->m_topo_operators.push_back(root_op);
+}
+
+const std::vector<std::shared_ptr<RuntimeOperator>> &RuntimeGraph::get_topo_queues() const {
+    return this->m_topo_operators;
 }
 
