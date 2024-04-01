@@ -117,5 +117,26 @@ static arma::fmat load_data(const std::string &file_path, char split_char = ',')
     return _data;
 }
 
+static std::string shape_str(const std::vector<uint32_t> &shapes) {
+    std::ostringstream ss;
+    for (int i = 0; i < shapes.size(); ++i) {
+        ss << shapes.at(i);
+        if (i != shapes.size() - 1) {
+            ss << " x ";
+        }
+    }
+    return ss.str();
+}
+static std::string shape_str(const std::vector<int> &shapes) {
+    std::ostringstream ss;
+    for (int i = 0; i < shapes.size(); ++i) {
+        ss << shapes.at(i);
+        if (i != shapes.size() - 1) {
+            ss << " x ";
+        }
+    }
+    return ss.str();
+}
+
 
 #endif //INFERFRAMEWORK_UTILS_HPP
