@@ -28,6 +28,10 @@ void tensor_multiply(const std::shared_ptr<Tensor> &tensor1, const std::shared_p
 
 std::shared_ptr<Tensor> tensor_create(uint32_t channels, uint32_t rows, uint32_t cols);
 
+std::shared_ptr<Tensor> tensor_create(uint32_t rows, uint32_t cols);
+
+std::shared_ptr<Tensor> tensor_create(uint32_t size);
+
 std::shared_ptr<Tensor> tensor_create(const std::vector<uint32_t> &shapes);
 
 std::pair<size_t, size_t> get_mat_size(std::ifstream &file, char split_char);
@@ -46,6 +50,6 @@ void init_operator_input(const std::vector<std::shared_ptr<RuntimeOperator>> &op
 /// 如果图是第二次及以后运行，则检查输出operand的形状和operand中张量的形状是否匹配
 
 void init_operator_output(const std::vector<pnnx::Operator *> &pnnx_operators,
-                        const std::vector<std::shared_ptr<RuntimeOperator>> &operators);
+                          const std::vector<std::shared_ptr<RuntimeOperator>> &operators);
 
 #endif //INFERFRAMEWORK_UTILS_HPP
