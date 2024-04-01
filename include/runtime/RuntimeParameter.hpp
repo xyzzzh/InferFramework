@@ -6,24 +6,61 @@
 #define INFERFRAMEWORK_RUNTIMEPARAMETER_HPP
 
 #include "Common.hpp"
-
-// 计算节点中的参数信息
 struct RuntimeParameter { /// 计算节点中的参数信息
     virtual ~RuntimeParameter() = default;
 
-    explicit RuntimeParameter(ERuntimeParameterType type = ERuntimeParameterType::ERPT_ParameterUnknown) : m_type(type) {
+    explicit RuntimeParameter(ERuntimeParameterType type = ERuntimeParameterType::ERPT_ParameterUnknown) : type(type) {
 
     }
-
-    ERuntimeParameterType m_type = ERuntimeParameterType::ERPT_ParameterUnknown;
-    std::variant<bool, int, float, std::string, std::vector<int>, std::vector<float>, std::vector<std::string>> m_value;
-
-    template<typename T>
-    inline void set_value(const T &val) { m_value = val; }
-
-    template<typename T>
-    inline T get_value() const { return std::get<T>(m_value); }
+    ERuntimeParameterType type = ERuntimeParameterType::ERPT_ParameterUnknown;
 };
 
+struct RuntimeParameterInt : public RuntimeParameter {
+    RuntimeParameterInt() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterInt) {
 
+    }
+    int value = 0;
+};
+
+struct RuntimeParameterFloat : public RuntimeParameter {
+    RuntimeParameterFloat() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterFloat) {
+
+    }
+    float value = 0.f;
+};
+
+struct RuntimeParameterString : public RuntimeParameter {
+    RuntimeParameterString() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterString) {
+
+    }
+    std::string value;
+};
+
+struct RuntimeParameterIntArray : public RuntimeParameter {
+    RuntimeParameterIntArray() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterIntArray) {
+
+    }
+    std::vector<int> value;
+};
+
+struct RuntimeParameterFloatArray : public RuntimeParameter {
+    RuntimeParameterFloatArray() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterFloatArray) {
+
+    }
+    std::vector<float> value;
+};
+
+struct RuntimeParameterStringArray : public RuntimeParameter {
+    RuntimeParameterStringArray() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterStringArray) {
+
+    }
+    std::vector<std::string> value;
+};
+
+struct RuntimeParameterBool : public RuntimeParameter {
+    RuntimeParameterBool() : RuntimeParameter(ERuntimeParameterType::ERPT_ParameterBool) {
+
+    }
+    bool value = false;
+};
 #endif //INFERFRAMEWORK_RUNTIMEPARAMETER_HPP
