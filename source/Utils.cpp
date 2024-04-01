@@ -152,3 +152,126 @@ void tensor_multiply(const std::shared_ptr<Tensor> &tensor1, const std::shared_p
         output_tensor->set_data(input_tensor1->data() % input_tensor2->data());
     }
 }
+
+std::pair<size_t, size_t> get_mat_size(std::ifstream &file, char split_char) {
+    bool load_ok = file.good();
+    file.clear();
+    size_t fn_rows = 0;
+    size_t fn_cols = 0;
+    const std::ifstream::pos_type start_pos = file.tellg();
+
+    std::string token;
+    std::string line_str;
+    std::stringstream line_stream;
+
+    while (file.good() && load_ok) {
+        std::getline(file, line_str);
+        if (line_str.empty()) {
+            break;
+        }
+
+        line_stream.clear();
+        line_stream.str(line_str);
+        size_t line_cols = 0;
+
+        std::string row_token;
+        while (line_stream.good()) {
+            std::getline(line_stream, row_token, split_char);
+            ++line_cols;
+        }
+        if (line_cols > fn_cols) {
+            fn_cols = line_cols;
+        }
+
+        ++fn_rows;
+    }
+    file.clear();
+    file.seekg(start_pos);
+    return {fn_rows, fn_cols};
+}
+
+arma::fmat load_data(const std::string &file_path, char split_char) {
+    arma::fmat _data;
+    if (file_path.empty()) {
+        LOG(ERROR) << "CSV file path is empty: " << file_path;
+        return _data;
+    }
+
+    std::ifstream in(file_path);
+    if (!in.is_open() || !in.good()) {
+        LOG(ERROR) << "Open file failed: " << file_path;
+        return _data;
+    }
+
+    std::string line_str;
+    std::stringstream line_stream;
+
+
+    const auto &[rows, cols] = get_mat_size(in, split_char);
+    _data.zeros(rows, cols);
+
+    size_t row = 0;
+    while (in.good()) {
+        std::getline(in, line_str);
+        if (line_str.empty()) {
+            break;
+        }
+
+        std::string token;
+        line_stream.clear();
+        line_stream.str(line_str);
+
+        size_t col = 0;
+        while (line_stream.good()) {
+            std::getline(line_stream, token, split_char);
+            try {
+                _data.at(row, col) = std::stof(token);
+            }
+            catch (std::exception &e) {
+                DLOG(ERROR) << "Parse CSV File meet error: " << e.what() << " row:" << row << " col:" << col;
+            }
+            col += 1;
+            CHECK(col <= cols) << "There are excessive elements on the column";
+        }
+
+        row += 1;
+        CHECK(row <= rows) << "There are excessive elements on the row";
+    }
+    return _data;
+}
+
+std::string shape_str(const std::vector<uint32_t> &shapes) {
+    std::ostringstream ss;
+    for (int i = 0; i < shapes.size(); ++i) {
+        ss << shapes.at(i);
+        if (i != shapes.size() - 1) {
+            ss << " x ";
+        }
+    }
+    return ss.str();
+}
+
+std::string shape_str(const std::vector<int> &shapes) {
+    std::ostringstream ss;
+    for (int i = 0; i < shapes.size(); ++i) {
+        ss << shapes.at(i);
+        if (i != shapes.size() - 1) {
+            ss << " x ";
+        }
+    }
+    return ss.str();
+}
+
+/// 如果图是第一次运行，则根据节点输入operand的形状准备好后续Layer计算中所需要的Tensor
+/// 如果图是第二次及以后运行，则检查输入operand的形状和operand中张量的形状是否匹配
+void init_operator_input(const std::vector<std::shared_ptr<RuntimeOperator>> &operators){
+    // TODO
+}
+
+/// 如果图是第一次运行，则根据节点输出operand的形状准备好后续Layer计算中所需要的Tensor
+/// 如果图是第二次及以后运行，则检查输出operand的形状和operand中张量的形状是否匹配
+
+void init_operator_output(const std::vector<pnnx::Operator *> &pnnx_operators,
+                          const std::vector<std::shared_ptr<RuntimeOperator>> &operators){
+    // TODO
+}

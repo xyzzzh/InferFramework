@@ -1,7 +1,7 @@
 //
 // Created by xyzzzh on 2024/4/1.
 //
-#include "data/tensor.hpp"
+#include "data/Tensor.hpp"
 #include "runtime/ir.h"
 #include "runtime/RuntimeGraph.hpp"
 #include <glog/logging.h>

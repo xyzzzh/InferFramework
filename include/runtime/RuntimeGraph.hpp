@@ -6,6 +6,7 @@
 #define INFERFRAMEWORK_RUNTIMEGRAPH_HPP
 
 #include "Common.hpp"
+#include "Utils.hpp"
 #include "runtime/RuntimeOperator.hpp"
 #include "runtime/RuntimeOperand.hpp"
 #include "runtime/RuntimeAttribute.hpp"
@@ -31,6 +32,9 @@ public:
 
     // 返回权重文件
     const std::string &bin_path() const;
+
+    // 返回当前图状态
+    const EGraphState &state() const;
 
     // 计算图的初始化
     bool init();
@@ -58,6 +62,8 @@ private:
     init_graph_params(const std::map<std::string, pnnx::Parameter> &params,
                     const std::shared_ptr<RuntimeOperator> &runtime_operator);
 
+    // 拓扑排序
+    void ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op);
 private:
     std::string m_input_name;  /// 计算图输入节点的名称
     std::string m_output_name; /// 计算图输出节点的名称
@@ -66,8 +72,11 @@ private:
 
     std::vector<std::shared_ptr<RuntimeOperator>> m_operators;
     std::map<std::string, std::shared_ptr<RuntimeOperator>> m_operators_maps;
+    std::vector<std::shared_ptr<RuntimeOperator>> m_topo_operators;
 
     std::unique_ptr<pnnx::Graph> m_graph; /// pnnx的graph
+
+    EGraphState m_state = EGraphState::EGS_NeedInit;
 };
 
 

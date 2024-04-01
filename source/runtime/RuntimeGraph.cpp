@@ -10,6 +10,55 @@ RuntimeGraph::RuntimeGraph(std::string param_path, std::string bin_path) {
 }
 
 void RuntimeGraph::build(const std::string &input_name, const std::string &output_name) {
+    if (this->m_state == EGraphState::EGS_Completed) {
+        LOG(INFO) << "Model has been built already!";
+        return;
+    }
+
+    if (this->m_state == EGraphState::EGS_NeedInit) {
+        bool init_graph = this->init();
+        LOG_IF(FATAL, !init_graph) << "Init graph failed!";
+    }
+
+    CHECK(this->m_state == EGraphState::EGS_NeedBuild) << "Graph status error, current state is " << int(this->m_state);
+    LOG_IF(FATAL, this->m_operators.empty()) << "Graph operators is empty, may be no init";
+
+    // 构建图关系
+    for (const auto &curr_op: this->m_operators) {
+        // 获取当前节点的所有后继节点的names，遍历根据next_op_name从operators_maps中插入所需要的节点
+        const std::vector<std::string> &output_names = curr_op->m_output_names;
+        for (const auto &_name: output_names) {
+            const auto &output_op = this->m_operators_maps.find(_name);
+            if (output_op != this->m_operators_maps.end()) {
+                curr_op->m_output_operators.insert({_name, output_op->second});
+            }
+        }
+    }
+
+    // 初始化节点的输入和输出空间
+    init_operator_input(this->m_operators);
+    init_operator_output(this->m_graph->ops, this->m_operators);
+
+    // 构建拓扑顺序
+    this->m_topo_operators.clear();
+    for (const auto &[_, op] : this->m_operators_maps) {
+        // 根据输入节点构建拓扑排序
+        if (op->m_type == "pnnx.Input" && !op->m_has_forward) {
+            this->ReverseTopo(op);
+        }
+    }
+
+    CHECK(this->m_topo_operators.size() == this->m_operators.size())
+                    << "Build wrong topo queue";
+    std::reverse(this->m_topo_operators.begin(), this->m_topo_operators.end());
+
+    this->m_state = EGraphState::EGS_Completed;
+    this->m_input_name = input_name;
+    this->m_output_name = output_name;
+    if (this->m_graph != nullptr) {
+        this->m_graph.reset();
+        this->m_graph = nullptr;
+    }
 
 }
 
@@ -28,6 +77,10 @@ const std::string &RuntimeGraph::param_path() const {
 // 返回权重文件
 const std::string &RuntimeGraph::bin_path() const {
     return this->m_bin_path;
+}
+
+const EGraphState &RuntimeGraph::state() const {
+    return this->m_state;
 }
 
 // 计算图的初始化
@@ -91,6 +144,7 @@ bool RuntimeGraph::init() {
             this->m_operators_maps.insert({runtime_operator->m_name, runtime_operator});
         }
     }
+    this->m_state = EGraphState::EGS_NeedBuild;
     return true;
 }
 
@@ -172,47 +226,47 @@ RuntimeGraph::init_graph_attrs(const std::map<std::string, pnnx::Attribute> &att
 void
 RuntimeGraph::init_graph_params(const std::map<std::string, pnnx::Parameter> &params,
                                 const std::shared_ptr<RuntimeOperator> &runtime_operator) {
-    for (const auto& pair : params) {
-        const std::string& name = pair.first;
-        const pnnx::Parameter& parameter = pair.second;
+    for (const auto &pair: params) {
+        const std::string &name = pair.first;
+        const pnnx::Parameter &parameter = pair.second;
         const int type = parameter.type;
         switch (type) {
             case int(ERuntimeParameterType::ERPT_ParameterUnknown): {
-                RuntimeParameter* runtime_parameter = new RuntimeParameter;
+                RuntimeParameter *runtime_parameter = new RuntimeParameter;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterBool): {
-                RuntimeParameterBool* runtime_parameter = new RuntimeParameterBool;
+                RuntimeParameterBool *runtime_parameter = new RuntimeParameterBool;
                 runtime_parameter->value = parameter.b;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterInt): {
-                RuntimeParameterInt* runtime_parameter = new RuntimeParameterInt;
+                RuntimeParameterInt *runtime_parameter = new RuntimeParameterInt;
                 runtime_parameter->value = parameter.i;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterFloat): {
-                RuntimeParameterFloat* runtime_parameter = new RuntimeParameterFloat;
+                RuntimeParameterFloat *runtime_parameter = new RuntimeParameterFloat;
                 runtime_parameter->value = parameter.f;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterString): {
-                RuntimeParameterString* runtime_parameter = new RuntimeParameterString;
+                RuntimeParameterString *runtime_parameter = new RuntimeParameterString;
                 runtime_parameter->value = parameter.s;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterIntArray): {
-                RuntimeParameterIntArray* runtime_parameter =
+                RuntimeParameterIntArray *runtime_parameter =
                         new RuntimeParameterIntArray;
                 runtime_parameter->value = parameter.ai;
                 runtime_operator->m_params.insert({name, runtime_parameter});
@@ -220,14 +274,14 @@ RuntimeGraph::init_graph_params(const std::map<std::string, pnnx::Parameter> &pa
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterFloatArray): {
-                RuntimeParameterFloatArray* runtime_parameter =
+                RuntimeParameterFloatArray *runtime_parameter =
                         new RuntimeParameterFloatArray;
                 runtime_parameter->value = parameter.af;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
             case int(ERuntimeParameterType::ERPT_ParameterStringArray): {
-                RuntimeParameterStringArray* runtime_parameter =
+                RuntimeParameterStringArray *runtime_parameter =
                         new RuntimeParameterStringArray;
                 runtime_parameter->value = parameter.as;
                 runtime_operator->m_params.insert({name, runtime_parameter});
@@ -238,5 +292,23 @@ RuntimeGraph::init_graph_params(const std::map<std::string, pnnx::Parameter> &pa
             }
         }
     }
+}
+
+void RuntimeGraph::ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op) {
+    CHECK(root_op != nullptr) << "current operator is nullptr";
+    root_op->m_has_forward = true;
+    const auto &next_ops = root_op->m_output_operators;
+    for (const auto &[_, op]: next_ops) {
+        if (op != nullptr) {
+            if (op->m_has_forward) {
+                this->ReverseTopo(op);
+            }
+        }
+    }
+
+    for (const auto &[_, op]: next_ops) {
+        CHECK(op->m_has_forward);
+    }
+    this->m_topo_operators.push_back(root_op);
 }
 

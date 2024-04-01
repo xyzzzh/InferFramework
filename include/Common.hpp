@@ -91,5 +91,10 @@ enum class EParseParameterAttrStatus {
     EPPAS_ParameterAttrParseSuccess = 0
 };
 
+enum class EGraphState{
+    EGS_NeedInit = -2,
+    EGS_NeedBuild = -1,
+    EGS_Completed = 0
+};
 
 #endif //INFERFRAMEWORK_COMMON_HPP
