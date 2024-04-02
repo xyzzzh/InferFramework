@@ -5,12 +5,12 @@
 #include "layer/abstract/Layer.hpp"
 
 EInferStatus
-Layer::Forward(const std::vector<std::shared_ptr<Tensor>> &inputs, std::vector<std::shared_ptr<Tensor>> &outputs) {
+Layer::forward(const std::vector<std::shared_ptr<Tensor>> &inputs, std::vector<std::shared_ptr<Tensor>> &outputs) {
     // TODO
     return EInferStatus::EIS_InferFailedInputOutSizeMatchError;
 }
 
-EInferStatus Layer::Forward() {
+EInferStatus Layer::forward() {
 
     LOG_IF(FATAL, this->m_runtime_operator.expired()) << "Runtime operator is expired or nullptr";
 
@@ -33,7 +33,7 @@ EInferStatus Layer::Forward() {
 
     // 执行operator当中的layer计算过程
     // layer的计算结果存放在current_op->output_operands->m_data中
-    EInferStatus status = runtime_operator->m_layer->Forward(layer_input_datas, output_operand_datas->m_data);
+    EInferStatus status = runtime_operator->m_layer->forward(layer_input_datas, output_operand_datas->m_data);
 
     return status;
 }

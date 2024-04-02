@@ -15,13 +15,13 @@ public:
     virtual ~Layer() = default;
 
     // Layer的执行函数
-    virtual EInferStatus Forward(
+    virtual EInferStatus forward(
             const std::vector<std::shared_ptr<Tensor>> &inputs,
             std::vector<std::shared_ptr<Tensor>> &outputs
     );
 
     // Layer的执行函数
-    virtual EInferStatus Forward();
+    virtual EInferStatus forward();
 
     // 返回层的权重
     virtual const std::vector<std::shared_ptr<Tensor>> &weights() const;
