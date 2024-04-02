@@ -12,7 +12,7 @@ static LayerRegisterer::CreateRegistry *RegistryGlobal() {
 }
 
 TEST(test_registry, registry1) {
-    
+
     LayerRegisterer::CreateRegistry *registry1 = RegistryGlobal();
     LayerRegisterer::CreateRegistry *registry2 = RegistryGlobal();
 
@@ -32,32 +32,32 @@ EParseParameterAttrStatus MyTestCreator(
 }
 
 TEST(test_registry, registry2) {
-    LayerRegisterer::CreateRegistry registry1 = LayerRegisterer::Registry();
-    LayerRegisterer::CreateRegistry registry2 = LayerRegisterer::Registry();
-    ASSERT_EQ(registry1, registry2);
-    LayerRegisterer::RegisterCreator("test_type", MyTestCreator);
-    LayerRegisterer::CreateRegistry registry3 = LayerRegisterer::Registry();
+    LayerRegisterer::CreateRegistry registry1 = LayerRegisterer::get_registry();
+    LayerRegisterer::CreateRegistry registry2 = LayerRegisterer::get_registry();
+    ASSERT_TRUE(LayerRegisterer::compare_CreateRegistry(registry1, registry2));
+    LayerRegisterer::register_creator("test_type", MyTestCreator);
+    LayerRegisterer::CreateRegistry registry3 = LayerRegisterer::get_registry();
     ASSERT_EQ(registry3.size(), 1);
     ASSERT_NE(registry3.find("test_type"), registry3.end());
 }
 
 TEST(test_registry, create_layer) {
     // 注册了一个test_type_1算子
-    LayerRegisterer::RegisterCreator("test_type_1", MyTestCreator);
+    LayerRegisterer::register_creator("test_type_1", MyTestCreator);
     std::shared_ptr<RuntimeOperator> op = std::make_shared<RuntimeOperator>();
     op->m_type = "test_type_1";
     std::shared_ptr<Layer> layer;
     ASSERT_EQ(layer, nullptr);
-    layer = LayerRegisterer::CreateLayer(op);
+    layer = LayerRegisterer::create_layer(op);
     ASSERT_NE(layer, nullptr);
 }
 
 TEST(test_registry, create_layer_util) {
-    LayerRegistererWrapper LayerRegistererWrapper("test_type_2", MyTestCreator);
+    LayerRegisterer::layer_registerer_wrapper("test_type_2", MyTestCreator);
     std::shared_ptr<RuntimeOperator> op = std::make_shared<RuntimeOperator>();
     op->m_type = "test_type_2";
     std::shared_ptr<Layer> layer;
     ASSERT_EQ(layer, nullptr);
-    layer = LayerRegisterer::CreateLayer(op);
+    layer = LayerRegisterer::create_layer(op);
     ASSERT_NE(layer, nullptr);
 }
