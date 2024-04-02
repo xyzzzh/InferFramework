@@ -19,7 +19,7 @@ aux_source_directory(source DIR_SOURCE)
 aux_source_directory(source/data DIR_SOURCE_DATA)
 aux_source_directory(source/runtime DIR_SOURCE_RUNTIME)
 aux_source_directory(source/layer/abstract DIR_ABSTRACT_LAYER)
-aux_source_directory(source/layer/details DIR_DETAIL_LAYER)
+aux_source_directory(source/layer/detail DIR_DETAIL_LAYER)
 aux_source_directory(source/parser DIR_PARSER)
 
 add_executable(InferFramework ${DIR_TEST} ${DIR_PARSER} ${DIR_SOURCE} ${DIR_SOURCE_DATA} ${DIR_SOURCE_RUNTIME} ${DIR_DETAIL_LAYER} ${DIR_ABSTRACT_LAYER})
