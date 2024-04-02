@@ -8,7 +8,7 @@
 #include "Common.hpp"
 #include "layer/abstract/Layer.hpp"
 
-class ParamLayer : Layer {
+class ParamLayer : public Layer{
 public:
     explicit ParamLayer(const std::string &layer_name) : Layer(layer_name){}
 
