@@ -37,7 +37,7 @@ TEST(test_registry, registry2) {
     ASSERT_TRUE(LayerRegisterer::compare_CreateRegistry(registry1, registry2));
     LayerRegisterer::register_creator("test_type", MyTestCreator);
     LayerRegisterer::CreateRegistry registry3 = LayerRegisterer::get_registry();
-    ASSERT_EQ(registry3.size(), 1);
+    ASSERT_EQ(registry3.size(), 2);
     ASSERT_NE(registry3.find("test_type"), registry3.end());
 }
 
@@ -53,11 +53,36 @@ TEST(test_registry, create_layer) {
 }
 
 TEST(test_registry, create_layer_util) {
-    LayerRegisterer::layer_registerer_wrapper("test_type_2", MyTestCreator);
+    LayerRegistererWrapper ReluGetInstance("test_type_2", MyTestCreator);
     std::shared_ptr<RuntimeOperator> op = std::make_shared<RuntimeOperator>();
     op->m_type = "test_type_2";
     std::shared_ptr<Layer> layer;
     ASSERT_EQ(layer, nullptr);
     layer = LayerRegisterer::create_layer(op);
     ASSERT_NE(layer, nullptr);
+}
+
+
+TEST(test_registry, create_layer_reluforward) {
+    std::shared_ptr<RuntimeOperator> op = std::make_shared<RuntimeOperator>();
+    op->m_type = "nn.ReLU";
+    std::shared_ptr<Layer> layer;
+    ASSERT_EQ(layer, nullptr);
+    layer = LayerRegisterer::create_layer(op);
+    ASSERT_NE(layer, nullptr);
+
+    std::shared_ptr<Tensor> input_tensor = std::make_shared<Tensor>(3, 4, 4);
+    input_tensor->rand();
+    input_tensor->data() -= 0.5f;
+
+    LOG(INFO) << input_tensor->data();
+
+    std::vector<std::shared_ptr<Tensor>> inputs(1);
+    std::vector<std::shared_ptr<Tensor>> outputs(1);
+    inputs.at(0) = input_tensor;
+    layer->forward(inputs, outputs);
+
+    for (const auto &output : outputs) {
+        output->show();
+    }
 }
