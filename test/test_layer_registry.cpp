@@ -35,9 +35,10 @@ TEST(test_registry, registry2) {
     LayerRegisterer::CreateRegistry registry1 = LayerRegisterer::get_registry();
     LayerRegisterer::CreateRegistry registry2 = LayerRegisterer::get_registry();
     ASSERT_TRUE(LayerRegisterer::compare_CreateRegistry(registry1, registry2));
+    auto default_size = LayerRegisterer::get_registry().size();
     LayerRegisterer::register_creator("test_type", MyTestCreator);
     LayerRegisterer::CreateRegistry registry3 = LayerRegisterer::get_registry();
-    ASSERT_EQ(registry3.size(), 2);
+    ASSERT_EQ(registry3.size(), default_size+1);
     ASSERT_NE(registry3.find("test_type"), registry3.end());
 }
 
