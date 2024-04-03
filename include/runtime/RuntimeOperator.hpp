@@ -26,7 +26,7 @@ struct RuntimeOperator {
     std::vector<std::string> m_output_names;  /// 节点的输出节点名称
     std::shared_ptr<RuntimeOperand> m_output_operands;  /// 节点的输出操作数
 
-    std::map<std::string, RuntimeParameter*> m_params;  /// 算子的参数信息
+    std::map<std::string, std::shared_ptr<RuntimeParameter>> m_params;  /// 算子的参数信息
     std::map<std::string, std::shared_ptr<RuntimeAttribute>> m_attribute;  /// 算子的属性信息，内含权重信息
 
 };

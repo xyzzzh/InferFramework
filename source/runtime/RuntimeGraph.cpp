@@ -232,57 +232,54 @@ RuntimeGraph::init_graph_params(const std::map<std::string, pnnx::Parameter> &pa
         const int type = parameter.type;
         switch (type) {
             case int(ERuntimeParameterType::ERPT_ParameterUnknown): {
-                RuntimeParameter *runtime_parameter = new RuntimeParameter;
+                std::shared_ptr<RuntimeParameter> runtime_parameter = std::make_shared<RuntimeParameter>();
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterBool): {
-                RuntimeParameterBool *runtime_parameter = new RuntimeParameterBool;
+                std::shared_ptr<RuntimeParameterBool> runtime_parameter = std::make_shared<RuntimeParameterBool>();
                 runtime_parameter->value = parameter.b;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterInt): {
-                RuntimeParameterInt *runtime_parameter = new RuntimeParameterInt;
+                std::shared_ptr<RuntimeParameterInt> runtime_parameter = std::make_shared<RuntimeParameterInt>();
                 runtime_parameter->value = parameter.i;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterFloat): {
-                RuntimeParameterFloat *runtime_parameter = new RuntimeParameterFloat;
+                std::shared_ptr<RuntimeParameterFloat> runtime_parameter = std::make_shared<RuntimeParameterFloat>();
                 runtime_parameter->value = parameter.f;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterString): {
-                RuntimeParameterString *runtime_parameter = new RuntimeParameterString;
+                std::shared_ptr<RuntimeParameterString> runtime_parameter = std::make_shared<RuntimeParameterString>();
                 runtime_parameter->value = parameter.s;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterIntArray): {
-                RuntimeParameterIntArray *runtime_parameter =
-                        new RuntimeParameterIntArray;
+                std::shared_ptr<RuntimeParameterIntArray> runtime_parameter = std::make_shared<RuntimeParameterIntArray>();
                 runtime_parameter->value = parameter.ai;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
 
             case int(ERuntimeParameterType::ERPT_ParameterFloatArray): {
-                RuntimeParameterFloatArray *runtime_parameter =
-                        new RuntimeParameterFloatArray;
+                std::shared_ptr<RuntimeParameterFloatArray> runtime_parameter = std::make_shared<RuntimeParameterFloatArray>();
                 runtime_parameter->value = parameter.af;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
             }
             case int(ERuntimeParameterType::ERPT_ParameterStringArray): {
-                RuntimeParameterStringArray *runtime_parameter =
-                        new RuntimeParameterStringArray;
+                std::shared_ptr<RuntimeParameterStringArray> runtime_parameter = std::make_shared<RuntimeParameterStringArray>();
                 runtime_parameter->value = parameter.as;
                 runtime_operator->m_params.insert({name, runtime_parameter});
                 break;
