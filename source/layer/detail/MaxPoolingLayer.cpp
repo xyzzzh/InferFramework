@@ -195,4 +195,4 @@ MaxPoolingLayer::get_instance(const std::shared_ptr<RuntimeOperator> &op, std::s
     return EParseParameterAttrStatus::EPPAS_ParameterAttrParseSuccess;
 }
 
-LayerRegistererWrapper MaxPoolingGetInstance("nn.MaxPool2d", MaxPoolingLayer::get_instance);
+LayerRegistererWrapper maxpooling_get_instance("nn.MaxPool2d", MaxPoolingLayer::get_instance);

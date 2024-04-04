@@ -95,7 +95,10 @@ public:
     std::shared_ptr<Tensor> clone();
 
     // 返回数据的原始指针
-    const float *raw_ptr() const;
+    float *raw_ptr();
+
+    // 返回第index个矩阵的起始地址
+    float *matrix_raw_ptr(uint32_t index);
 
 private:
     void review(const std::vector<uint32_t> &shapes);

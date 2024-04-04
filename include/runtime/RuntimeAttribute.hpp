@@ -15,7 +15,7 @@ struct RuntimeAttribute {
 
     // 从节点中加载权重参数
     template<typename T>
-    std::vector<T> get_weight_data(bool need_clear_weight) {
+    std::vector<T> get_weight_data(bool need_clear_weight = true) {
         CHECK(!this->m_weight_data.empty());
         CHECK(this->m_type != ERuntimeDataType::ERDT_Unknown);
 

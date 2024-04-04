@@ -36,7 +36,7 @@ public:
 
     void set_bias(const std::vector<float> &bias) override;
 
-private:
+protected:
     std::vector<std::shared_ptr<Tensor>> m_weights;
     std::vector<std::shared_ptr<Tensor>> m_bias;
 };

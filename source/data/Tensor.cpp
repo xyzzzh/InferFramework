@@ -210,7 +210,7 @@ void Tensor::show() {
 
 void Tensor::show_shapes() {
     LOG(INFO) << "Tensor shapes: ";
-    for(auto num : m_raw_shapes){
+    for (auto num: m_raw_shapes) {
         LOG(INFO) << num << "\t";
     }
     LOG(INFO) << "\n";
@@ -271,9 +271,17 @@ std::shared_ptr<Tensor> Tensor::clone() {
     return std::make_shared<Tensor>(*this);
 }
 
-const float *Tensor::raw_ptr() const {
+float *Tensor::raw_ptr(){
     CHECK(!m_data.empty());
     return m_data.memptr();
+}
+
+float *Tensor::matrix_raw_ptr(uint32_t index) {
+    CHECK_LT(index, this->channels());
+    uint32_t offset = index * this->rows() * this->cols();
+    CHECK_LE(offset, this->size());
+    float *mem_ptr = this->raw_ptr() + offset;
+    return mem_ptr;
 }
 
 void Tensor::review(const std::vector<uint32_t> &shapes) {
