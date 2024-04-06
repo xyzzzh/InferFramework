@@ -8,6 +8,7 @@
 #include <armadillo>
 #include <vector>
 #include <string>
+#include <stack>
 #include <memory>
 #include <glog/logging.h>
 #include <map>
@@ -91,10 +92,21 @@ enum class EParseParameterAttrStatus {
     EPPAS_ParameterAttrParseSuccess = 0
 };
 
-enum class EGraphState{
+enum class EGraphState {
     EGS_NeedInit = -2,
     EGS_NeedBuild = -1,
     EGS_Completed = 0
+};
+
+enum class ETokenType {
+    ETT_TokenUnknown = -9,
+    ETT_TokenInputNumber = -8,
+    ETT_TokenComma = -7,
+    ETT_TokenAdd = -6,
+    ETT_TokenMul = -5,
+    ETT_TokenLeftBracket = -4,
+    ETT_TokenRightBracket = -3,
+    ETT_TokenSin = -2,
 };
 
 #endif //INFERFRAMEWORK_COMMON_HPP
