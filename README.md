@@ -50,30 +50,7 @@
 │         ├── simple_ops2.pnnx.param
 │         ├── test_linear.pnnx.bin
 │         └── test_linear.pnnx.param
-├── source
-│         ├── Utils.cpp
-│         ├── data
-│         │         └── Tensor.cpp
-│         ├── layer
-│         │         ├── abstract
-│         │         │         ├── Layer.cpp
-│         │         │         ├── LayerRegisterer.cpp
-│         │         │         └── ParamLayer.cpp
-│         │         └── detail
-│         │             ├── AdaptiveAveragePoolingLayer.cpp
-│         │             ├── ConvLayer.cpp
-│         │             ├── ExpressionLayer.cpp
-│         │             ├── FlattenLayer.cpp
-│         │             ├── LinearLayer.cpp
-│         │             ├── MaxPoolingLayer.cpp
-│         │             ├── ReluLayer.cpp
-│         │             └── SoftmaxLayer.cpp
-│         ├── parser
-│         │         └── ExpressionParser.cpp
-│         └── runtime
-│             ├── RuntimeGraph.cpp
-│             ├── ir.cpp
-│             └── store_zip.cpp
+├── source  // 实现代码
 ├── test    // 测试代码
 │         ├── main.cpp
 │         ├── test_conv.cpp
@@ -87,13 +64,6 @@
 │         └── test_topo.cpp
 └── tmp
     └── data_loader
-        ├── data1.csv
-        ├── data2.csv
-        ├── data3.csv
-        ├── data4.csv
-        ├── data5.csv
-        ├── data6.csv
-        └── data7.csv
 ```
 
 ## 依赖库
