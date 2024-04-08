@@ -3,6 +3,8 @@
 //
 
 #include "runtime/RuntimeGraph.hpp"
+#include "layer/abstract/Layer.hpp"
+#include "layer/abstract/LayerRegisterer.hpp"
 
 RuntimeGraph::RuntimeGraph(std::string param_path, std::string bin_path) {
     this->m_param_path = std::move(param_path);
@@ -31,6 +33,19 @@ void RuntimeGraph::build(const std::string &input_name, const std::string &outpu
             const auto &output_op = this->m_operators_maps.find(_name);
             if (output_op != this->m_operators_maps.end()) {
                 curr_op->m_output_operators.insert({_name, output_op->second});
+            }
+        }
+    }
+
+    for (const auto &op: this->m_operators) {
+        // 除了输入和输出节点，都创建layer
+        if (op->m_type != "pnnx.Input" && op->m_type != "pnnx.Output") {
+            std::shared_ptr<Layer> layer = RuntimeGraph::create_layer(op);
+            CHECK(layer != nullptr)
+                            << "Layer " << op->m_name << " create failed!";
+            if (layer) {
+                op->m_layer = layer;
+                layer->set_runtime_operator(op);
             }
         }
     }
@@ -311,5 +326,100 @@ void RuntimeGraph::ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op) 
 
 const std::vector<std::shared_ptr<RuntimeOperator>> &RuntimeGraph::get_topo_queues() const {
     return this->m_topo_operators;
+}
+
+std::shared_ptr<Layer> RuntimeGraph::create_layer(const std::shared_ptr<RuntimeOperator> &op) {
+    LOG_IF(FATAL, !op) << "Operator is empty!";
+    auto layer = LayerRegisterer::create_layer(op);
+    LOG_IF(FATAL, !layer) << "Layer init failed " << op->m_type;
+    return layer;
+}
+
+std::vector<std::shared_ptr<Tensor>>
+RuntimeGraph::forward(const std::vector<std::shared_ptr<Tensor>> &inputs, bool debug) {
+    // 检查当前的执行图是否已经初始化完毕
+    if (this->m_state < EGraphState::EGS_Completed) {
+        LOG(FATAL) << "Graph need be build!";
+    }
+    CHECK(this->m_state == EGraphState::EGS_Completed)
+                    << "Graph status error, current state is " << int(this->m_state);
+
+    CHECK(this->m_topo_operators.size() == this->m_operators.size())
+                    << "Build wrong topo queue";
+
+    for (const auto &op: this->m_topo_operators) {
+
+        op->m_has_forward = false;
+    }
+
+    int i = 0;
+
+    for (const auto &current_op: this->m_topo_operators) {
+        if (current_op == nullptr) {
+            LOG(INFO) << "current_op== nullptr";
+        }
+        if (current_op->m_type == "pnnx.Input") {
+            current_op->m_has_forward = true;
+            probe_next_layer(current_op, inputs);
+        } else if (current_op->m_type == "pnnx.Output") {
+            current_op->m_has_forward = true;
+            CHECK(current_op->m_input_operands_seq.size() == 1);
+            current_op->m_output_operands = current_op->m_input_operands_seq.front();
+        } else {
+            EInferStatus status = current_op->m_layer->forward();
+            CHECK(status == EInferStatus::EIS_InferSuccess)
+                            << current_op->m_layer->layer_name()
+                            << " layer forward failed, error code: " << int(status);
+            current_op->m_has_forward = true;
+            probe_next_layer(current_op, current_op->m_output_operands->m_data);
+        }
+    }
+    LOG(INFO) << "3";
+    for (const auto &op: this->m_topo_operators) {
+
+        LOG_IF(FATAL, !op->m_has_forward)
+                        << "The operator: " << op->m_name << " has not been forward yet!";
+    }
+
+    if (m_operators_maps.find(m_output_name) != m_operators_maps.end()) {
+        const auto &output_op = m_operators_maps.at(m_output_name);
+        CHECK(output_op->m_output_operands != nullptr)
+                        << "Output from" << output_op->m_name << " is empty";
+        const auto &output_operand = output_op->m_output_operands;
+        return output_operand->m_data;
+    } else {
+        LOG(FATAL) << "Can not find the output operator " << m_output_name;
+        return std::vector<std::shared_ptr<Tensor>>{};
+    }
+}
+
+void RuntimeGraph::probe_next_layer(const std::shared_ptr<RuntimeOperator> &current_op,
+                                    const std::vector<std::shared_ptr<Tensor>> &layer_output_data) {
+    // 当前节点的后继节点next_ops
+    const auto &next_ops = current_op->m_output_operators;
+    // 对所有后继节点进行遍历
+    for (const auto &[_, next_rt_operator]: next_ops) {
+        // 得到后继节点的输入next_input_operands
+        const auto &next_input_operands = next_rt_operator->m_input_operands;
+        // 确定后继节点的输入来自于current_op
+        if (next_input_operands.find(current_op->m_name) !=
+            next_input_operands.end()) {
+            // 得到后继节点的关于current_op输出的输入空间 next_input_datas
+            /**
+             * next_input_operands:
+             * {
+             *    输入1 -- current_op.name: current_op对应的输出空间
+             *    输入2 -- other_op.name: other_op对应的输出空间
+             * }
+             */
+            std::vector<std::shared_ptr<Tensor>> &next_input_datas =
+                    next_input_operands.at(current_op->m_name)->m_data;
+            CHECK(next_input_datas.size() == layer_output_data.size());
+            // 将当前current_op的输出赋值到next_input_datas中
+            for (int i = 0; i < next_input_datas.size(); ++i) {
+                next_input_datas.at(i) = layer_output_data.at(i);
+            }
+        }
+    }
 }
 
