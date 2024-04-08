@@ -6,7 +6,7 @@
 
 ExpressionLayer::ExpressionLayer(std::string statement) : NonParamLayer("Expression"),
                                                           m_statement(std::move(statement)) {
-    this->m_parser = std::make_unique<ExpressionParser>(statement);
+    this->m_parser = std::make_unique<ExpressionParser>(m_statement);
 
 }
 

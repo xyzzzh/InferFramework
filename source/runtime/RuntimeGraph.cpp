@@ -374,7 +374,7 @@ RuntimeGraph::forward(const std::vector<std::shared_ptr<Tensor>> &inputs, bool d
             probe_next_layer(current_op, current_op->m_output_operands->m_data);
         }
     }
-    LOG(INFO) << "3";
+
     for (const auto &op: this->m_topo_operators) {
 
         LOG_IF(FATAL, !op->m_has_forward)

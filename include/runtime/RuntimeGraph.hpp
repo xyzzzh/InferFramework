@@ -43,6 +43,11 @@ public:
 
     const std::vector<std::shared_ptr<RuntimeOperator>> &get_topo_queues() const;
 
+    // 根据计算图中的计算节点来返回Layer
+    static std::shared_ptr<Layer> create_layer(const std::shared_ptr<RuntimeOperator> &op);
+
+    std::vector<std::shared_ptr<Tensor>> forward(const std::vector<std::shared_ptr<Tensor>> &inputs, bool debug);
+
 private:
     // 初始化计算图节点中的输入操作数
     static void init_graph_operators_input(
@@ -66,6 +71,10 @@ private:
 
     // 拓扑排序
     void ReverseTopo(const std::shared_ptr<RuntimeOperator> &root_op);
+
+    // 探查下一层的计算节点
+    static void probe_next_layer(const std::shared_ptr<RuntimeOperator> &current_op,
+                               const std::vector<std::shared_ptr<Tensor>> &layer_output_data);
 
 private:
     std::string m_input_name;  /// 计算图输入节点的名称

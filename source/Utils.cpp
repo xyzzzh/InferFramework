@@ -411,3 +411,7 @@ void init_operator_output(const std::vector<pnnx::Operator *> &pnnx_operators,
         }
     }
 }
+
+std::shared_ptr<Tensor> tensor_clone(std::shared_ptr<Tensor> tensor) {
+    return std::make_shared<Tensor>(*tensor);
+}

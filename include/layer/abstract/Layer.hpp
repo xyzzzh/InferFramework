@@ -20,6 +20,7 @@ public:
             std::vector<std::shared_ptr<Tensor>> &outputs
     );
 
+public:
     // Layer的执行函数
     virtual EInferStatus forward();
 

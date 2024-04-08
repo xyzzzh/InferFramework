@@ -124,7 +124,7 @@ EInferStatus MaxPoolingLayer::forward(const std::vector<std::shared_ptr<Tensor>>
             }
         }
     }
-
+    return EInferStatus::EIS_InferSuccess;
 }
 
 EParseParameterAttrStatus
@@ -184,9 +184,6 @@ MaxPoolingLayer::get_instance(const std::shared_ptr<RuntimeOperator> &op, std::s
         return EParseParameterAttrStatus::EPPAS_ParameterMissingKernel;
     }
 
-    // MaxPoolingLayer(uint32_t padding_h, uint32_t padding_w,
-    //                    uint32_t pooling_size_h, uint32_t pooling_size_w,
-    //                    uint32_t stride_h, uint32_t stride_w);
     max_layer = std::make_shared<MaxPoolingLayer>(
             padding_values[0], padding_values[1],
             kernel_size_values[0], kernel_size_values[1],

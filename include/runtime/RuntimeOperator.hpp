@@ -10,7 +10,8 @@
 #include "runtime/RuntimeParameter.hpp"
 #include "runtime/RuntimeAttribute.hpp"
 
-struct Layer;
+class Layer;
+
 // 计算图中的计算节点
 struct RuntimeOperator {
 

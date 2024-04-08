@@ -69,7 +69,7 @@ public:
 
     void fill(float value);
 
-    void fill(const std::vector<float> &values);
+    void fill(const std::vector<float> &values, bool row_major = true);
 
     // 以常量1初始化张量
     void ones();
@@ -99,6 +99,9 @@ public:
 
     // 返回第index个矩阵的起始地址
     float *matrix_raw_ptr(uint32_t index);
+
+    // 返回Tensor内的所有数据
+    std::vector<float> values(bool row_major = true);
 
 private:
     void review(const std::vector<uint32_t> &shapes);
