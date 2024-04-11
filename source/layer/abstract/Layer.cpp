@@ -6,7 +6,6 @@
 
 EInferStatus
 Layer::forward(const std::vector<std::shared_ptr<Tensor>> &inputs, std::vector<std::shared_ptr<Tensor>> &outputs) {
-    // TODO
     return EInferStatus::EIS_InferFailedInputOutSizeMatchError;
 }
 
@@ -39,27 +38,17 @@ EInferStatus Layer::forward() {
 }
 
 const std::vector<std::shared_ptr<Tensor>> &Layer::weights() const {
-    // TODO
     return {};
 }
 
 const std::vector<std::shared_ptr<Tensor>> &Layer::bias() const {
-    // TODO
     return {};
 }
 
-void Layer::set_weights(const std::vector<std::shared_ptr<Tensor>> &weights) {
-    // TODO
-}
+void Layer::set_weights(const std::vector<std::shared_ptr<Tensor>> &weights) {}
 
-void Layer::set_weights(const std::vector<float> &weights) {
-    // TODO
-}
+void Layer::set_weights(const std::vector<float> &weights) {}
 
-void Layer::set_bias(const std::vector<std::shared_ptr<Tensor>> &bias) {
-    // TODO
-}
+void Layer::set_bias(const std::vector<std::shared_ptr<Tensor>> &bias) {}
 
-void Layer::set_bias(const std::vector<float> &bias) {
-    // TODO
-}
+void Layer::set_bias(const std::vector<float> &bias) {}
