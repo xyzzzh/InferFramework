@@ -80,7 +80,7 @@ EInferStatus SoftmaxLayer::forward(
                 float max_value = std::numeric_limits<float>::lowest();
                 // 迭代当前dim中的数据，并找到其中的最大值
                 for (uint32_t axis_size = 0; axis_size < axis_sizes; ++axis_size) {
-                    uint32_t index = get_pos_index(outer_size, inner_size, axis_size, axis_sizes, inner_sizes);
+                    uint32_t index = outer_size* axis_sizes* inner_sizes + axis_size* inner_sizes + inner_size;
                     float cur_value = input_values.at(index);
                     if (cur_value > max_value) {
                         max_value = cur_value;
@@ -90,7 +90,7 @@ EInferStatus SoftmaxLayer::forward(
                 float sum_value = 0.f;
                 // 迭代当前dim中的数据，并进行求和
                 for (uint32_t axis_size = 0; axis_size < axis_sizes; ++axis_size) {
-                    uint32_t index = get_pos_index(outer_size, inner_size, axis_size, axis_sizes, inner_sizes);
+                    uint32_t index = outer_size* axis_sizes* inner_sizes + axis_size* inner_sizes + inner_size;
                     float cur_value = input_values.at(index);
                     float exp_sub_value = fmath::exp(cur_value - max_value);
 
@@ -100,7 +100,7 @@ EInferStatus SoftmaxLayer::forward(
 
                 // 迭代当前dim中的数据，求exp(cur_value - max_value) / sum_value
                 for (uint32_t axis_size = 0; axis_size < axis_sizes; ++axis_size) {
-                    uint32_t index = get_pos_index(outer_size, inner_size, axis_size, axis_sizes, inner_sizes);
+                    uint32_t index = outer_size* axis_sizes* inner_sizes + axis_size* inner_sizes + inner_size;
 
                     float exp_sub_value = output_values.at(index);
                     output_values.at(index) = exp_sub_value / sum_value;

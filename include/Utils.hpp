@@ -54,10 +54,4 @@ void init_operator_input(const std::vector<std::shared_ptr<RuntimeOperator>> &op
 void init_operator_output(const std::vector<pnnx::Operator *> &pnnx_operators,
                           const std::vector<std::shared_ptr<RuntimeOperator>> &operators);
 
-template<typename T>
-inline T &&
-get_pos_index(const T &outer_size, const T &inner_size, const T &axis_size, const T &axis_sizes, const T &inner_sizes) {
-    return outer_size * axis_sizes * inner_sizes + axis_size * inner_sizes + inner_size;
-}
-
 #endif //INFERFRAMEWORK_UTILS_HPP
